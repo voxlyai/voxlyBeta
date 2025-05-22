@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
     const data = await apiRes.json();
     const reply = data.choices?.[0]?.message?.content || "Oops, something went wrong.";
-    res.status(200).json({ message: reply });
+   res.status(200).json({ reply });
 
   } catch (error) {
     console.error("OpenAI error:", error);

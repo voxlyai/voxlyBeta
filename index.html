@@ -178,7 +178,11 @@ function typeMessage(name, text) {
 });
 
     const data = await response.json();
-typeMessage("Voxly", data.reply);
+if (data.reply) {
+  typeMessage("Voxly", data.reply);
+} else {
+  typeMessage("Voxly", "Oops! Something went wrong.");
+}
   } catch (err) {
     messagesDiv.innerHTML += `<div class="msg bot">Error: ${err.message}</div>`;
   }
