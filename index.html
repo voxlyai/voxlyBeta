@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Voxly.ai – Your 24/7 AI Assistant</title>
   <style>
     body {
@@ -66,16 +66,43 @@
 
     .message {
       margin: 10px 0;
+      display: flex;
+      align-items: flex-start;
     }
 
     .message.user {
-      text-align: right;
-      color: #2563eb;
+      justify-content: flex-end;
     }
 
-    .message.bot {
-      text-align: left;
+    .message.user .bubble {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .message.bot .bubble {
+      background-color: #e5e7eb;
       color: #111;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 18px;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-right: 10px;
+    }
+
+    .typing {
+      font-style: italic;
+      color: #888;
+      margin-top: 5px;
     }
 
     @media (max-width: 600px) {
@@ -86,9 +113,7 @@
   </style>
 </head>
 <body>
-
   <img src="https://voxly.ai/logo.svg" alt="Voxly.ai" width="80" style="margin-bottom: 20px;" />
-
   <h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
 
   <!-- User Info -->
@@ -102,6 +127,7 @@
   <!-- Chat UI -->
   <div class="container" id="chat-section" style="display: none;">
     <div id="chat-output"></div>
+    <div id="typing-indicator" class="typing" style="display: none;">Voxly is typing...</div>
     <form id="chat-form">
       <input type="text" id="user-input" placeholder="Ask me anything..." autocomplete="off" required />
       <button type="submit">Send</button>
@@ -118,6 +144,7 @@
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
     const chatOutput = document.getElementById('chat-output');
+    const typingIndicator = document.getElementById('typing-indicator');
 
     let userInfo = {};
 
@@ -134,6 +161,7 @@
       userInfo = { name, email, phone };
       userInfoSection.style.display = 'none';
       chatSection.style.display = 'block';
+      appendMessage("bot", `Hi ${name}, welcome to Voxly! How can I assist you today?`);
     });
 
     chatForm.addEventListener('submit', async (e) => {
@@ -142,6 +170,8 @@
       if (!message) return;
 
       appendMessage("user", message);
+      userInput.value = "";
+      typingIndicator.style.display = 'block';
 
       try {
         const response = await fetch('/api/chat', {
@@ -163,23 +193,26 @@
         if (reply) {
           appendMessage("bot", reply);
         }
-
       } catch (err) {
         console.error("Chat error:", err);
-        appendMessage("bot", "Sorry, there was a problem. Please try again.");
+        appendMessage("bot", "Sorry, something went wrong. Please try again later.");
+      } finally {
+        typingIndicator.style.display = 'none';
       }
-
-      userInput.value = "";
     });
 
     function appendMessage(role, text) {
       const msg = document.createElement("div");
       msg.className = "message " + role;
-      msg.innerText = text;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerText = text;
+
+      msg.appendChild(bubble);
       chatOutput.appendChild(msg);
       chatOutput.scrollTop = chatOutput.scrollHeight;
     }
   </script>
-
 </body>
 </html>
