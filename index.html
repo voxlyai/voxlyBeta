@@ -1,264 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Voxly.ai – Your 24/7 AI Sales Assistant</title>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background: #f9fafe;
-        padding: 2rem;
-        color: #1f2937;
-      }
-
-      .logo-container {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-
-      .logo {
-        width: 140px;
-        opacity: 0;
-        transform: translateY(-20px);
-        animation: fadeSlideIn 1s ease forwards;
-      }
-
-      @keyframes fadeSlideIn {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      h2 {
-        text-align: center;
-        font-size: 1.5rem;
-        color: #0f172a;
-        margin-bottom: 1rem;
-      }
-
-      #chat-container {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .message {
-        margin: 0.75rem 0;
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        max-width: 100%;
-        font-weight: 500;
-        display: block;
-        animation: fadeIn 0.3s ease-in-out;
-      }
-
-      .user {
-        background-color: #e0f2ff;
-        color: #0369a1;
-        align-self: flex-start;
-      }
-
-      .bot {
-        background-color: #f1f5f9;
-        color: #111827;
-        align-self: flex-end;
-      }
-
-      .typing-indicator {
-        font-style: italic;
-        color: #6b7280;
-        margin-top: 0.5rem;
-      }
-
-      form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 1rem;
-      }
-
-      input[type="text"] {
-        width: 80%;
-        padding: 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        font-size: 1rem;
-        margin-right: 8px;
-      }
-
-      button {
-        background-color: #3b82f6;
-        color: white;
-        border: none;
-        padding: 12px 16px;
-        font-size: 1rem;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: background-color 0.25s;
-      }
-
-      button:hover {
-        background-color: #2563eb;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(5px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="logo-container">
-      <img src="voxly-logo.png" alt="Voxly Logo" class="logo" />
-    </div>
-    <h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
-
-    <div id="chat-container"></div>
-<h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
-
-<!-- User Info Gate -->
-<div id="user-info-section">
-  <input type="text" id="user-name" placeholder="Your name" required>
-  <input type="email" id="user-email" placeholder="Your email" required>
-  <input type="tel" id="user-phone" placeholder="Your phone number" required>
-  <button id="start-chat">Start Chat</button>
-</div>
-
-<!-- Chat Section (hidden by default) -->
-<div id="chat-section" style="display: none;">
-  <div id="chat-output"></div>
-  <form id="chat-form">
-    <input type="text" id="user-input" placeholder="Ask me anything..." required>
-    <button type="submit">Send</button>
-  </form>
-</div>
-<script>
-  const startBtn = document.getElementById('start-chat');
-  const nameInput = document.getElementById('user-name');
-  const emailInput = document.getElementById('user-email');
-  const phoneInput = document.getElementById('user-phone');
-  const chatSection = document.getElementById('chat-section');
-
-  let userInfo = {
-    name: '',
-    email: '',
-    phone: ''
-  };
-
-  startBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    const phone = phoneInput.value.trim();
-
-    if (!name || !email || !phone) {
-      alert('Please fill out all fields before starting the chat.');
-      return;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voxly.ai – Your 24/7 AI Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #f5f6f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
 
-    userInfo.name = name;
-    userInfo.email = email;
-    userInfo.phone = phone;
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
 
-    // Hide the info gate, show the chat
-    document.getElementById('user-info-section').style.display = 'none';
-    chatSection.style.display = 'block';
-  });
-</script>
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      max-width: 500px;
+      width: 100%;
+    }
 
+    input, button {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
 
-    <script>
-      const chatContainer = document.querySelector("#chat-container");
-      const input = document.querySelector("#user-input");
-      const form = document.querySelector("#chat-form");
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-      const typingIndicator = document.createElement("div");
-      typingIndicator.className = "typing-indicator";
-      typingIndicator.innerText = "Voxly is typing...";
+    button:hover {
+      background-color: #2563eb;
+    }
 
-      // store messages in-session
-      const messageHistory = [];
+    #chat-output {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fafafa;
+      margin-bottom: 15px;
+    }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const message = input.value.trim();
-        const name = document.querySelector('#user-name').value.trim();
-const email = document.querySelector('#user-email').value.trim();
+    .message {
+      margin: 10px 0;
+    }
 
-        if (!message) return;
+    .message.user {
+      text-align: right;
+      color: #2563eb;
+    }
 
-        appendMessage("user", message);
-        await fetch('/api/chat', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: userInfo.name,
-    email: userInfo.email,
-    phone: userInfo.phone,
-    message: message,
-    agent_id: 'YOUR_AGENT_ID' // replace this with your actual UUID
-  })
-});
+    .message.bot {
+      text-align: left;
+      color: #111;
+    }
 
-        await fetch('/api/chat', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: name,
-    email: email,
-    message: message,
-    agent_id: 'YOUR_AGENT_UUID' // ← Replace with real UUID from Supabase
-  })
-});
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
 
-        input.value = "";
+  <img src="https://voxly.ai/logo.svg" alt="Voxly.ai" width="80" style="margin-bottom: 20px;" />
 
-        chatContainer.appendChild(typingIndicator);
-        messageHistory.push({ role: "user", content: message });
+  <h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
 
-        const response = await fetch("/api/chat", {
-          method: "POST",
+  <!-- User Info -->
+  <div class="container" id="user-info-section">
+    <input type="text" id="user-name" placeholder="Your name" required />
+    <input type="email" id="user-email" placeholder="Your email" required />
+    <input type="tel" id="user-phone" placeholder="Your phone number" required />
+    <button id="start-chat">Start Chat</button>
+  </div>
+
+  <!-- Chat UI -->
+  <div class="container" id="chat-section" style="display: none;">
+    <div id="chat-output"></div>
+    <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Ask me anything..." autocomplete="off" required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('start-chat');
+    const nameInput = document.getElementById('user-name');
+    const emailInput = document.getElementById('user-email');
+    const phoneInput = document.getElementById('user-phone');
+    const chatSection = document.getElementById('chat-section');
+    const userInfoSection = document.getElementById('user-info-section');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatOutput = document.getElementById('chat-output');
+
+    let userInfo = {};
+
+    startBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.trim();
+
+      if (!name || !email || !phone) {
+        alert("Please fill out all fields before starting the chat.");
+        return;
+      }
+
+      userInfo = { name, email, phone };
+      userInfoSection.style.display = 'none';
+      chatSection.style.display = 'block';
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      appendMessage("user", message);
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ messages: messageHistory }),
+          body: JSON.stringify({
+            name: userInfo.name,
+            email: userInfo.email,
+            phone: userInfo.phone,
+            message: message,
+            agent_id: 'YOUR_AGENT_ID'
+          })
         });
 
         const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content;
+        if (reply) {
+          appendMessage("bot", reply);
+        }
 
-        setTimeout(() => {
-          chatContainer.removeChild(typingIndicator);
-          appendMessage("bot", data.reply);
-          messageHistory.push({ role: "assistant", content: data.reply });
-        }, 700);
-      });
-
-      function appendMessage(sender, text) {
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
-        chatContainer.appendChild(msgDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+      } catch (err) {
+        console.error("Chat error:", err);
+        appendMessage("bot", "Sorry, there was a problem. Please try again.");
       }
-    </script>
-  </body>
+
+      userInput.value = "";
+    });
+
+    function appendMessage(role, text) {
+      const msg = document.createElement("div");
+      msg.className = "message " + role;
+      msg.innerText = text;
+      chatOutput.appendChild(msg);
+      chatOutput.scrollTop = chatOutput.scrollHeight;
+    }
+  </script>
+
+</body>
 </html>
-
-
-
