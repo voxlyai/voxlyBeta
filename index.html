@@ -127,13 +127,57 @@
     <h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
 
     <div id="chat-container"></div>
-<input type="text" id="user-name" placeholder="Your name">
-<input type="email" id="user-email" placeholder="Your email">
+<h2>Voxly.ai – Your 24/7 AI Sales Assistant</h2>
 
-    <form id="chat-form">
-      <input id="user-input" type="text" placeholder="Ask me anything..." />
-      <button type="submit">Send</button>
-    </form>
+<!-- User Info Gate -->
+<div id="user-info-section">
+  <input type="text" id="user-name" placeholder="Your name" required>
+  <input type="email" id="user-email" placeholder="Your email" required>
+  <input type="tel" id="user-phone" placeholder="Your phone number" required>
+  <button id="start-chat">Start Chat</button>
+</div>
+
+<!-- Chat Section (hidden by default) -->
+<div id="chat-section" style="display: none;">
+  <div id="chat-output"></div>
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Ask me anything..." required>
+    <button type="submit">Send</button>
+  </form>
+</div>
+<script>
+  const startBtn = document.getElementById('start-chat');
+  const nameInput = document.getElementById('user-name');
+  const emailInput = document.getElementById('user-email');
+  const phoneInput = document.getElementById('user-phone');
+  const chatSection = document.getElementById('chat-section');
+
+  let userInfo = {
+    name: '',
+    email: '',
+    phone: ''
+  };
+
+  startBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (!name || !email || !phone) {
+      alert('Please fill out all fields before starting the chat.');
+      return;
+    }
+
+    userInfo.name = name;
+    userInfo.email = email;
+    userInfo.phone = phone;
+
+    // Hide the info gate, show the chat
+    document.getElementById('user-info-section').style.display = 'none';
+    chatSection.style.display = 'block';
+  });
+</script>
+
 
     <script>
       const chatContainer = document.querySelector("#chat-container");
@@ -156,6 +200,20 @@ const email = document.querySelector('#user-email').value.trim();
         if (!message) return;
 
         appendMessage("user", message);
+        await fetch('/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: userInfo.name,
+    email: userInfo.email,
+    phone: userInfo.phone,
+    message: message,
+    agent_id: 'YOUR_AGENT_ID' // replace this with your actual UUID
+  })
+});
+
         await fetch('/api/chat', {
   method: 'POST',
   headers: {
