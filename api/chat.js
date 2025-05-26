@@ -3,17 +3,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const userMessage = req.body.message;
-  const userName = req.body.name;
-const userEmail = req.body.email;
-const agentId = req.body.agent_id;
-
+  const { message: userMessage, name: userName, email: userEmail, agent_id: agentId } = req.body;
 
   if (!userMessage) {
     return res.status(400).json({ error: 'Missing message' });
   }
 
-  // 🧠 Local memory per request (not global)
   const conversationHistory = [
     {
       role: "system",
@@ -26,6 +21,7 @@ const agentId = req.body.agent_id;
   ];
 
   try {
+    // 🔁 Get GPT Response
     const completion = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -39,29 +35,34 @@ const agentId = req.body.agent_id;
     });
 
     const data = await completion.json();
-    await fetch('https://ceelklkoytgghpwckyyg.supabase.co/functions/v1/create-lead', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}` // your Supabase anon key
-  },
-  body: JSON.stringify({
-    name: req.body.name,
-    email: req.body.email,
-    message: req.body.message,
-    agent_id: req.body.agent_id
-  })
-});
+    console.log("GPT raw response:", JSON.stringify(data, null, 2));
 
     const reply = data.choices?.[0]?.message?.content;
 
     if (!reply) {
       return res.status(500).json({ error: 'No response from GPT' });
     }
-    
+
+    // 📥 Log Lead to Supabase
+    await fetch('https://ceelklkoytgghpwckyyg.supabase.co/functions/v1/create-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        name: userName,
+        email: userEmail,
+        message: userMessage,
+        agent_id: agentId
+      })
+    });
+
+    // ✅ Send reply back to frontend
     res.status(200).json({ reply });
+
   } catch (error) {
     console.error('Chat error:', error);
-    res.status(500).json({ error: 'Error contacting OpenAI' });
+    res.status(500).json({ error: 'Error contacting OpenAI or Supabase' });
   }
 }
